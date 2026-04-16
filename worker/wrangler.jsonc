@@ -1,0 +1,13 @@
+{
+  "name": "claude-notify",
+  "main": "src/index.ts",
+  "compatibility_date": "2024-09-25",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "claude-notify-db",
+      "database_id": "99a53d3d-8843-478f-bff2-46b5387a2e20"
+    }
+  ]
+}
