@@ -59,7 +59,7 @@ export async function handleNotify(
     }
   }
 
-  const iconUrl = new URL("/icon.svg", request.url).href;
+  const iconUrl = new URL("/icon.jpg", request.url).href;
 
   // Use session name (/rename) if available, otherwise fall back to directory name
   const sessionName = body.session_name;

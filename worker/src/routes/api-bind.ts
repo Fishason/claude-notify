@@ -37,7 +37,7 @@ export async function handleBind(
     );
   }
 
-  const iconUrl = new URL("/icon.svg", request.url).href;
+  const iconUrl = new URL("/icon.jpg", request.url).href;
 
   // Verify bark_key by sending a test notification
   const testResult = await sendBarkNotification(barkKey, {

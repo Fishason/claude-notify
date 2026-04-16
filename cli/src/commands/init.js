@@ -1,79 +1,53 @@
 const crypto = require("crypto");
 const os = require("os");
-const readline = require("readline");
 const { configExists, loadConfig, saveConfig } = require("../config");
 const { register } = require("../api");
 
-async function prompt(question) {
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-  return new Promise((resolve) => {
-    rl.question(question, (answer) => { rl.close(); resolve(answer.trim()); });
-  });
-}
+const WORKER_URL = "https://claude-notify.y3343454050.workers.dev";
 
 async function initCommand(options) {
-  const existingConfig = loadConfig();
+  const existing = loadConfig();
 
-  if (existingConfig && !options.force) {
-    console.log("⚠️  已经初始化过了。使用 --force 重新注册设备。");
-    console.log(`   Machine ID: ${existingConfig.machine_id}`);
-    console.log(`   Worker URL: ${existingConfig.worker_url}`);
+  if (existing && !options.force) {
+    console.log("Already initialized. Use --force to re-register.");
+    console.log(`  Machine: ${existing.machine_id}`);
     return;
   }
 
-  console.log("🔧 Claude Notify 初始化\n");
-
-  // Worker URL: reuse existing, or accept from flag/env, or prompt once
-  let workerUrl = options.url
-    || process.env.CLAUDE_NOTIFY_URL
-    || (existingConfig && existingConfig.worker_url);
-
-  if (!workerUrl) {
-    workerUrl = await prompt("Worker URL: ");
-  }
-  workerUrl = workerUrl.replace(/\/+$/, "");
-
-  if (!workerUrl.startsWith("https://")) {
-    console.error("❌ Worker URL 必须以 https:// 开头");
-    process.exit(1);
-  }
-
-  // Generate new credentials
   const machineId = crypto.randomUUID();
   const notifyToken = crypto.randomBytes(32).toString("hex");
   const machineName = os.hostname();
 
-  console.log(`📋 设备: ${machineName}`);
-  console.log(`📡 注册中...`);
+  console.log(`Registering ${machineName}...`);
 
   try {
-    const { data } = await register(workerUrl, {
+    const { data } = await register(WORKER_URL, {
       machine_id: machineId,
       notify_token: notifyToken,
       machine_name: machineName,
     });
-    if (!data.success) { console.error(`❌ ${data.error}`); process.exit(1); }
+    if (!data.success) { console.error(`Error: ${data.error}`); process.exit(1); }
   } catch (e) {
-    console.error(`❌ 无法连接: ${e.message}`);
+    console.error(`Connection failed: ${e.message}`);
     process.exit(1);
   }
 
-  saveConfig({ machine_id: machineId, notify_token: notifyToken, worker_url: workerUrl });
+  saveConfig({ machine_id: machineId, notify_token: notifyToken, worker_url: WORKER_URL });
 
-  const bindUrl = `${workerUrl}/bind?id=${machineId}`;
-  console.log("✅ 注册成功\n");
-  console.log("📱 扫码绑定手机:\n");
+  const bindUrl = `${WORKER_URL}/bind?id=${machineId}`;
+  console.log("Registered.\n");
+  console.log("Scan to bind your phone:\n");
 
   try {
     const qrcode = require("qrcode-terminal");
     qrcode.generate(bindUrl, { small: true }, (qr) => {
       console.log(qr);
-      console.log(`\n🔗 ${bindUrl}`);
-      console.log(`\n运行 claude-notify setup-hook 配置自动通知`);
+      console.log(`\n${bindUrl}`);
+      console.log(`\nThen run: claude-notify setup-hook`);
     });
   } catch {
-    console.log(`🔗 ${bindUrl}\n`);
-    console.log(`运行 claude-notify setup-hook 配置自动通知`);
+    console.log(bindUrl);
+    console.log(`\nThen run: claude-notify setup-hook`);
   }
 }
 

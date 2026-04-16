@@ -6,19 +6,13 @@ async function statusCommand() {
 
   try {
     const { data } = await status(config.worker_url, config.machine_id);
+    if (!data.success) { console.error(`Error: ${data.error}`); return; }
 
-    if (!data.success) {
-      console.error(`❌ ${data.error}`);
-      return;
-    }
-
-    console.log("📊 设备状态:");
-    console.log(`   设备名称: ${data.machine_name}`);
-    console.log(`   绑定状态: ${data.bound ? "✅ 已绑定" : "❌ 未绑定"}`);
-    console.log(`   通知开关: ${data.is_active ? "🔔 开启" : "🔕 关闭"}`);
-    console.log(`   Worker:   ${config.worker_url}`);
+    console.log(`Machine:       ${data.machine_name}`);
+    console.log(`Bound:         ${data.bound ? "Yes" : "No"}`);
+    console.log(`Notifications: ${data.is_active ? "On" : "Off"}`);
   } catch (e) {
-    console.error(`❌ 请求失败: ${e.message}`);
+    console.error(`Failed: ${e.message}`);
   }
 }
 

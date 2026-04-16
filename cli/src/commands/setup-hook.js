@@ -3,94 +3,63 @@ const path = require("path");
 const os = require("os");
 const { requireConfig } = require("../config");
 
-const CLAUDE_SETTINGS_PATH = path.join(os.homedir(), ".claude", "settings.json");
+const CLAUDE_SETTINGS = path.join(os.homedir(), ".claude", "settings.json");
 
-function getClaudeNotifyPath() {
-  // Resolve the actual path of this CLI tool for the hook command
-  // Use 'which' equivalent: the bin entry that npm links
+function getHookCommand() {
   try {
     const binPath = require.resolve("../../bin/claude-notify.js");
     return `node ${binPath}`;
   } catch {
-    // Fallback: assume it's in PATH
     return "claude-notify";
   }
 }
 
 async function setupHookCommand(options) {
-  requireConfig(); // just validate config exists
+  requireConfig();
 
-  const cmdPath = getClaudeNotifyPath();
-  const hookCommand = `${cmdPath} _hook-handler`;
-
-  // Read existing settings
   let settings = {};
-  if (fs.existsSync(CLAUDE_SETTINGS_PATH)) {
-    try {
-      settings = JSON.parse(fs.readFileSync(CLAUDE_SETTINGS_PATH, "utf-8"));
-    } catch (e) {
-      console.error(`❌ 无法解析 ${CLAUDE_SETTINGS_PATH}: ${e.message}`);
-      process.exit(1);
-    }
-  } else {
-    console.log("⚠️  未找到 Claude Code 配置文件，将创建新文件。");
+  if (fs.existsSync(CLAUDE_SETTINGS)) {
+    try { settings = JSON.parse(fs.readFileSync(CLAUDE_SETTINGS, "utf-8")); }
+    catch (e) { console.error(`Cannot parse ${CLAUDE_SETTINGS}`); process.exit(1); }
   }
 
-  // Merge hook config
-  if (!settings.hooks) {
-    settings.hooks = {};
-  }
+  if (!settings.hooks) settings.hooks = {};
 
-  const notificationHooks = settings.hooks.Notification || [];
+  const hooks = settings.hooks.Notification || [];
+  const hookCmd = `${getHookCommand()} _hook-handler`;
 
-  // Check if our hook already exists
-  const existingIndex = notificationHooks.findIndex((h) =>
-    h.hooks?.some((hh) => hh.command?.includes("claude-notify _hook-handler"))
+  const idx = hooks.findIndex((h) =>
+    h.hooks?.some((hh) => hh.command?.includes("claude-notify") && hh.command?.includes("_hook-handler"))
   );
 
-  const hookEntry = {
+  if (options.remove) {
+    if (idx >= 0) {
+      hooks.splice(idx, 1);
+      settings.hooks.Notification = hooks;
+      fs.writeFileSync(CLAUDE_SETTINGS, JSON.stringify(settings, null, 2) + "\n");
+      console.log("Hook removed.");
+    } else {
+      console.log("No hook found to remove.");
+    }
+    return;
+  }
+
+  const entry = {
     matcher: "idle_prompt",
-    hooks: [
-      {
-        type: "command",
-        command: hookCommand,
-      },
-    ],
+    hooks: [{ type: "command", command: hookCmd }],
   };
 
-  if (existingIndex >= 0) {
-    notificationHooks[existingIndex] = hookEntry;
-    console.log("🔄 更新已有的 hook 配置...");
-  } else {
-    notificationHooks.push(hookEntry);
-    console.log("➕ 添加 hook 配置...");
-  }
+  if (idx >= 0) hooks[idx] = entry;
+  else hooks.push(entry);
 
-  settings.hooks.Notification = notificationHooks;
+  settings.hooks.Notification = hooks;
+  const dir = path.dirname(CLAUDE_SETTINGS);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(CLAUDE_SETTINGS, JSON.stringify(settings, null, 2) + "\n");
 
-  // Write back
-  const dir = path.dirname(CLAUDE_SETTINGS_PATH);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  fs.writeFileSync(CLAUDE_SETTINGS_PATH, JSON.stringify(settings, null, 2) + "\n");
-
-  console.log(`✅ Hook 已配置到 ${CLAUDE_SETTINGS_PATH}`);
-  console.log(`   事件: Notification (idle_prompt)`);
-  console.log(`   命令: ${hookCommand}`);
-  console.log("\n💡 Claude Code 空闲等待输入时将自动推送通知到你的手机。");
-
-  if (options.remove) {
-    // Remove mode
-    if (existingIndex >= 0) {
-      notificationHooks.splice(existingIndex, 1);
-      settings.hooks.Notification = notificationHooks;
-      fs.writeFileSync(CLAUDE_SETTINGS_PATH, JSON.stringify(settings, null, 2) + "\n");
-      console.log("✅ Hook 已移除");
-    } else {
-      console.log("⚠️  未找到已配置的 hook");
-    }
-  }
+  console.log("Hook configured.");
+  console.log(`  Event:   Notification (idle_prompt)`);
+  console.log(`  Command: ${hookCmd}`);
 }
 
 module.exports = setupHookCommand;

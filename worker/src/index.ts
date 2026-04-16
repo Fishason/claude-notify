@@ -5,7 +5,7 @@ import { handleBind } from "./routes/api-bind";
 import { handleNotify } from "./routes/api-notify";
 import { handleToggle } from "./routes/api-toggle";
 import { renderBindPage } from "./routes/bind-page";
-import { handleIcon } from "./routes/icon";
+import { handleIcon, handleIconJpg } from "./routes/icon";
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -27,9 +27,15 @@ export default {
     try {
       let response: Response;
 
-      // Icon
+      // Icons
       if (method === "GET" && pathname === "/icon.svg") {
         return handleIcon();
+      }
+      if (method === "GET" && (pathname === "/icon.jpg" || pathname === "/icon.png")) {
+        return handleIconJpg();
+      }
+      if (method === "GET" && pathname === "/favicon.ico") {
+        return handleIconJpg();
       }
 
       // Binding page (HTML)

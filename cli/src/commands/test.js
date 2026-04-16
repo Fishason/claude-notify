@@ -3,23 +3,20 @@ const { notify } = require("../api");
 
 async function testCommand() {
   const config = requireConfig();
-
-  console.log("📡 发送测试通知...");
+  console.log("Sending test notification...");
 
   try {
     const { data } = await notify(config.worker_url, {
       machine_id: config.machine_id,
       notify_token: config.notify_token,
       cwd: process.cwd(),
+      session_name: "Test Notification",
     });
 
-    if (data.success) {
-      console.log(`✅ ${data.message}`);
-    } else {
-      console.error(`❌ ${data.error}`);
-    }
+    if (data.success) console.log(`Done: ${data.message}`);
+    else console.error(`Error: ${data.error}`);
   } catch (e) {
-    console.error(`❌ 请求失败: ${e.message}`);
+    console.error(`Failed: ${e.message}`);
   }
 }
 

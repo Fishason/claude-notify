@@ -6,19 +6,13 @@ const CONFIG_DIR = path.join(os.homedir(), ".claude-notify");
 const CONFIG_FILE = path.join(CONFIG_DIR, "config.json");
 
 function ensureDir() {
-  if (!fs.existsSync(CONFIG_DIR)) {
-    fs.mkdirSync(CONFIG_DIR, { recursive: true });
-  }
+  if (!fs.existsSync(CONFIG_DIR)) fs.mkdirSync(CONFIG_DIR, { recursive: true });
 }
 
-function configExists() {
-  return fs.existsSync(CONFIG_FILE);
-}
+function configExists() { return fs.existsSync(CONFIG_FILE); }
 
 function loadConfig() {
-  if (!configExists()) {
-    return null;
-  }
+  if (!configExists()) return null;
   return JSON.parse(fs.readFileSync(CONFIG_FILE, "utf-8"));
 }
 
@@ -30,7 +24,7 @@ function saveConfig(data) {
 function requireConfig() {
   const config = loadConfig();
   if (!config) {
-    console.error("❌ 未初始化。请先运行: claude-notify init");
+    console.error("Not initialized. Run: claude-notify init");
     process.exit(1);
   }
   return config;
