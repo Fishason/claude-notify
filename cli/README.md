@@ -5,7 +5,8 @@ Get push notifications on your iPhone when Claude Code finishes a task.
 Built for SSH workflows — know when Claude is done without watching the terminal.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Fishason/claude-notify/main/screen.png" alt="Notification screenshot" width="480">
+  <img src="https://raw.githubusercontent.com/Fishason/claude-notify/main/screenshot-banner.jpg" alt="Notification banner" width="520"><br><br>
+  <img src="https://raw.githubusercontent.com/Fishason/claude-notify/main/screenshot-list.jpg" alt="Notification list" width="520">
 </p>
 
 ## Setup
