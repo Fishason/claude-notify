@@ -11,7 +11,7 @@ Built for SSH workflows — know when Claude is done without watching the termin
 ### 2. Install the CLI
 
 ```bash
-npm install -g cc-notify
+npm install -g @fishason/cc-notify
 ```
 
 ### 3. Initialize
