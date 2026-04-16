@@ -4,6 +4,10 @@ Get push notifications on your iPhone when Claude Code finishes a task.
 
 Built for SSH workflows — know when Claude is done without watching the terminal.
 
+<p align="center">
+  <img src="screen.png" alt="Notification screenshot" width="360">
+</p>
+
 ## Setup
 
 ### 1. Install [Bark](https://apps.apple.com/app/bark/id1403753865) on your iPhone (free)
