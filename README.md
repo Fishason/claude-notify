@@ -41,7 +41,7 @@ Note the Worker URL (e.g. `https://claude-notify.xxx.workers.dev`).
 ### 3. Install the CLI on your SSH server
 
 ```bash
-npm install -g claude-notify
+npm install -g cc-notify
 ```
 
 ### 4. Initialize and bind

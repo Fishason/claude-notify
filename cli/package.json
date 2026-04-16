@@ -1,10 +1,17 @@
 {
-  "name": "claude-notify",
+  "name": "cc-notify",
   "version": "1.0.0",
-  "description": "Push notifications when Claude Code finishes on SSH servers",
+  "description": "Push notifications to iPhone when Claude Code finishes on SSH servers",
   "bin": {
     "claude-notify": "./bin/claude-notify.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Fishason/claude-notify"
+  },
+  "keywords": ["claude", "claude-code", "notifications", "bark", "ssh"],
+  "author": "Fishason",
+  "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
   },
