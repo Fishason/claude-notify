@@ -77,6 +77,7 @@ export async function handleNotify(
     group: "claude-code",
     level: "timeSensitive",
     icon: iconUrl,
+    sound: "telegraph",
   });
 
   if (!result.success) {

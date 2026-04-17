@@ -46,6 +46,7 @@ export async function handleBind(
     group: "claude-notify",
     level: "timeSensitive",
     icon: iconUrl,
+    sound: "telegraph",
   });
 
   if (!testResult.success) {
