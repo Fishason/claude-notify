@@ -37,7 +37,7 @@ export async function handleBind(
     );
   }
 
-  const iconUrl = new URL("/icon.jpg", request.url).href;
+  const iconUrl = new URL("/icon.jpg?v=3", request.url).href;
 
   // Verify bark_key by sending a test notification
   const testResult = await sendBarkNotification(barkKey, {
@@ -47,6 +47,7 @@ export async function handleBind(
     level: "timeSensitive",
     icon: iconUrl,
     sound: "telegraph",
+    url: "termius://",
   });
 
   if (!testResult.success) {

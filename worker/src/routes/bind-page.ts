@@ -398,6 +398,7 @@ export function renderBindPage(machineId: string, origin: string): string {
             Open Bark on your iPhone, copy the push URL from the home screen.<br/>
             Accepts <code>https://api.day.app/KEY/&hellip;</code> or just the key.
           </div>
+          <a href="bark://" class="btn btn-secondary" style="display:block;text-align:center;text-decoration:none;margin-top:14px;padding:11px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:13px;font-weight:500;">Open Bark App</a>
           <button class="btn btn-primary" id="bindBtn" onclick="bind()">Bind Device</button>
         </div>
       </div>

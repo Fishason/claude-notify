@@ -5,6 +5,7 @@ export interface BarkMessage {
   level?: "active" | "timeSensitive" | "passive";
   icon?: string;
   sound?: string;
+  url?: string;
 }
 
 /**
